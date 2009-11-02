@@ -11,6 +11,7 @@ begin
     gem.homepage = "http://github.com/bruce/lacquer"
     gem.authors = ["Bruce Williams"]
     gem.add_development_dependency "riot", ">= 0"
+    gem.add_development_dependency "sdoc"
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
   end
   Jeweler::GemcutterTasks.new
@@ -42,6 +43,7 @@ task :test => :check_dependencies
 
 task :default => :test
 
+require 'sdoc'
 require 'rake/rdoctask'
 Rake::RDocTask.new do |rdoc|
   version = File.exist?('VERSION') ? File.read('VERSION') : ""
@@ -50,4 +52,6 @@ Rake::RDocTask.new do |rdoc|
   rdoc.title = "lacquer #{version}"
   rdoc.rdoc_files.include('README*')
   rdoc.rdoc_files.include('lib/**/*.rb')
+  rdoc.options << '--fmt' << 'shtml' # explictly set shtml generator
+  rdoc.template = 'direct' # lighter template used on railsapi.com
 end
