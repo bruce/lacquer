@@ -72,19 +72,19 @@ You can define a DSL two different ways:
 
 1. From directly within the class definition (either normal or re-opened):
 
-       class Photo
-         include Lacquer::DSL
+         class Photo
+           include Lacquer::DSL
          
-         dsl :version => '1.0' do
-           # DSL definition goes here...
+           dsl :version => '1.0' do
+             # DSL definition goes here...
+           end
          end
-       end
 
 2. From the Lacquer module itself, separate of the class definition:
 
-       Lacquer.dsl Photo, :version => '1.0' do
-         # DSL definition goes here...
-       end
+         Lacquer.dsl Photo, :version => '1.0' do
+           # DSL definition goes here...
+         end
 
 Note: The version argument, shown above, is optional, but
 recommended.  The default version is '1.0', if not given.
@@ -98,20 +98,20 @@ Using our example above, this could be done using one of the following:
 
 1. Include the DSL module defined for the class: 
 
-       include Photo::DSL
+         include Photo::DSL
 
-       photo do
-         # use the DSL
-       end
+         photo do
+           # use the DSL
+         end
 
 2. Include the DSL module defined for the class (looking it up using
    the Lacquer module's `DSL` utility):
 
-       include Laquer::DSL(Photo)
+         include Laquer::DSL(Photo)
 
-       photo do
-         # use the DSL
-       end
+         photo do
+           # use the DSL
+         end
 
 Note: I explain how to use DSL with `yield` instead of `instance_eval`
 semantics in the "Yield instead Instance Eval" section at the bottom
@@ -180,10 +180,10 @@ Let's support adding people to photo instances.
 
 This now lets us do the following when using the DSL:
 
-  photo do
-    person "Joe"
-    person "Jack"
-  end
+    photo do
+      person "Joe"
+      person "Jack"
+    end
 
 We can support multiples, too:
 
@@ -211,13 +211,13 @@ The `use` method works in two different modes:
    the methods the DSL will call on the instance being constructed
    have exactly the names as the handlers provided:
 
-       use :foo, :bar, :baz
+         use :foo, :bar, :baz
 
 2. Supporting a single hash argument that map names used in the DSL to
    the method names the DSL will call on the instance it's
    constructing:
 
-       use :foo => :foo_implementation, :bar => :bar_implementation
+         use :foo => :foo_implementation, :bar => :bar_implementation
 
 We could easily refactor our `on`-based definition to add individual
 people to a photo with `use`:
