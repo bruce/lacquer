@@ -73,7 +73,7 @@ You can define a DSL two different ways:
 1. From directly within the class definition (either normal or re-opened):
 
          class Photo
-           include Lacquer::DSL
+           include Lacquer
          
            dsl :version => '1.0' do
              # DSL definition goes here...
@@ -92,61 +92,53 @@ recommended.  The default version is '1.0', if not given.
 ### How to use the DSL
 
 Once you've defined a DSL for a class, you can use it anywhere.  All
-you need to do is `include` the DSL module definition.
+you need to do is `include` the DSL definition's mixin.
 
-Using our example above, this could be done using one of the following:
-
-1. Include the DSL module defined for the class: 
-
-         include Photo::DSL
-
-         photo do
-           # use the DSL
-         end
-
-2. Include the DSL module defined for the class (looking it up using
-   the Lacquer module's `DSL` utility):
-
-         include Laquer::DSL(Photo)
-
-         photo do
-           # use the DSL
-         end
-
-Note: I explain how to use DSL with `yield` instead of `instance_eval`
-semantics in the "Yield instead Instance Eval" section at the bottom
-of the README.  I use the `instance_eval` form in this document for
-brevity.
+To do this, you need to understand how Lacquer DSLs are named and
+looked up.
 
 #### DSL names and entry points
 
-You'll notice that in both of these examples, a `photo` method is
-what's provided by the module inclusion.  This is what Lacquer refers
-to as the DSL "name" (and, when used as a method, the "entry point").
-While the DSL name is usually automatically derived from the target
-class name (in this example, `Photo`), it can be manually set when
-defining the DSL by providing a `:name` option.  For example, if we
+When you define a Lacquer DSL, it is given a name.  Under normal
+circumstances, the name is an "underscored, demodulized" version of
+the class name it targets.
+
+For our example, for instance, the target class is `Photo`, so the DSL
+name is `:photo`.
+
+We can get the mixin by calling the `Lacquer.[]` method, like:
+
+    include Lacquer[:photo]
+
+This will provide the DSL "entry point" method, which has the same
+name as the DSL:
+
+    photo do
+      # Use the DSL here...
+    end 
+
+If you want to define a DSL with name different than the target class,
+you cna do it by providing a `:name` option.  For example, if we
 defined the DSL using the following:
 
+    # inside the Photo class
     dsl :version => '1.0', :name => 'snap'
 
-Then, after including the module, we could use:
+Then, after including the module with `include Lacquer[:snap]`, we could use:
 
     snap do 
       # use the DSL
     end
 
-A side benefit of the ability to choose a different DSL name manually
-is that, since the `Lacquer::DSL` method also supports lookup using it,
-eg:
+A benefit of the ability to choose a different DSL name is the
+flexibility to switch out the underlying target class. 
 
-    include Lacquer::DSL(:photo)
-
-We could later, after refactoring, move the "photo" DSL to an entirely
-different class, and maintain backwards compatibility.
+For instance, in this example we could later, after refactoring, move
+the "photo" DSL to an entirely different class, and maintain backwards
+compatibility:
 
     class Snapshot
-      include Lacquer::DSL
+      include Lacquer
 
       dsl :version => '1.0', :name => 'photo' do
         # Modified DSL definition to create a "Snapshot" instance now
@@ -155,6 +147,11 @@ different class, and maintain backwards compatibility.
       # Newer DSL definitions
 
     end
+
+Provided we make any internal modifications to the DSL definition to
+make sure it correctly supports configuring `Snapshot` instances in a
+backwards-compatible manner, this change should be completely
+transparent to consumers of the DSL.
 
 ### How to define the DSL
 
@@ -201,6 +198,12 @@ We can support multiples, too:
     photo do
       people "Joe", "Jack"
     end
+
+Note: I explain how to use DSL with `yield` instead of `instance_eval`
+semantics in the "Yield instead Instance Eval" section at the bottom
+of the README.  If you're a fan of having an explicit receiver to use
+the handler with, check it out.  I use the `instance_eval` form in
+this document for brevity.
 
 #### Defining handlers with "use"
 
@@ -349,7 +352,7 @@ DSL hosts.  To support configuring people, we merely add a DSL to the
 We could add:
 
     # inside the Person class
-    include Lacquer::DSL
+    include Lacquer
 
     dsl do
       desc "Set the person's age" 
@@ -359,8 +362,8 @@ We could add:
 Once this is done, we can easily add fully configured people to
 photos:
 
-    include Lacquer::DSL(:photo)
-    # Note: I don't need to include Lacquer::DSL(:person)
+    include Lacquer[:photo]
+    # Note: I don't need to include Lacquer[:person]
 
     photo "School photo" do
       person "Sheila" do
