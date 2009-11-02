@@ -199,11 +199,11 @@ We can support multiples, too:
       people "Joe", "Jack"
     end
 
-Note: I explain how to use DSL with `yield` instead of `instance_eval`
-semantics in the "Yield instead Instance Eval" section at the bottom
-of the README.  If you're a fan of having an explicit receiver to use
-the handler with, check it out.  I use the `instance_eval` form in
-this document for brevity.
+Note: I explain how to use DSLs with `yield` instead of
+`instance_eval` semantics in the "Yield instead of Instance Eval"
+section at the bottom of the README.  If you're a fan of explicit
+receivers, check it out.  I use the `instance_eval` form in this
+document for brevity.
 
 #### Defining handlers with "use"
 
