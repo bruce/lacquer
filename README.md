@@ -173,13 +173,14 @@ called.  It's a lot like defining a method.
 
 Let's support adding people to photo instances.
 
-    # inside the DSL definition
+    # in the DSL definition
     on :person do |photo, name|
       photo.add_person(name)
     end
 
 This now lets us do the following when using the DSL:
 
+    # using the DSL
     photo do
       person "Joe"
       person "Jack"
@@ -187,7 +188,7 @@ This now lets us do the following when using the DSL:
 
 We can support multiples, too:
 
-    # inside the DSL definition
+    # in the DSL definition
     on :people do |photo, *names|
       names.each do |name|
         photo.add_person(name)
@@ -196,6 +197,7 @@ We can support multiples, too:
 
  So we can do this, as well:
 
+    # using the DSL
     photo do
       people "Joe", "Jack"
     end
@@ -211,17 +213,20 @@ The `use` method works in two different modes:
    the methods the DSL will call on the instance being constructed
    have exactly the names as the handlers provided:
 
+         # in the DSL definition
          use :foo, :bar, :baz
 
 2. Supporting a single hash argument that map names used in the DSL to
    the method names the DSL will call on the instance it's
    constructing:
 
+         # in the DSL definition
          use :foo => :foo_implementation, :bar => :bar_implementation
 
 We could easily refactor our `on`-based definition to add individual
 people to a photo with `use`:
 
+    # in the DSL definition
     use :person => :add_person
 
 Note: `use` currently configures the DSL to pass on any arguments
@@ -234,17 +239,19 @@ etc, use the more generic `on` instead.
 You use "set" to support calling attribute writers (methods ending in
 "=").  Let's add support for setting the caption:
 
-    # inside the DSL definition
+    # in the DSL definition
     set :caption
 
 Now it's as easy as:
 
+    # using the DSL
     photo do
       caption "Joe and Jack fighting walruses"
     end
 
 You can think of this as shorthand for:
 
+    # in the DSL definition
     use :caption => :caption=
 
 #### Documenting handlers with "desc"
@@ -253,6 +260,7 @@ This doesn't define DSL handlers, it documents them.  Use this just like
 `desc` from Rake: simply put it before the `on`, `use`, or `set`
 invocation.
 
+    # in the DSL definition
     desc "Add a person to the photo. We prefer the format 'LAST_NAME,
           FIRST_NAME'"
     use :person => :add_person
@@ -262,6 +270,7 @@ that creates configures multiple handlers, all will be given the same
 description.  If you include `%s` in the string provided to `desc`,
 the individual handler name will be inserted.
 
+    # in the DSL definition
     desc "Configure the `%s' setting" 
     set :setting1, :setting2, :setting3 
 
@@ -277,6 +286,7 @@ the photo.  Although we've configured the DSL to allow setting
 `caption` manually (in the example for `set`, above), it can also be
 set by the entry point:
 
+    # using the DSL
     photo "this is a caption", :lens => '50mm' do
       # DSL definition here...
     end
@@ -393,16 +403,19 @@ optionally, version] constraint that is allowed to be used.
 For instance, to force the `person` handler we defined with `use` above
 to load the `1.0` version of the `person` DSL defined on `Person`:
 
+    # in the DSL definition
     use {:person => :add_person}, :dsl => {:person => '1.0'}
 
 Since the version constraint works with normal RubyGems-style
 semantics, we can also do things like:
 
+    # in the DSL definition
     use {:person => :add_person}, :dsl => {:person => '~> 1.0'}
 
 Or, if we just want to give a friendly hint to the lookup and allow
 any version:
 
+    # in the DSL definition
     use {:person => :add_person}, :dsl => :person
 
 If the `:dsl` option is set and no matching DSL is found, a
@@ -411,7 +424,7 @@ appropriate for the value (ie, it does not inherit from the DSL's
 target class), the block will be skipped -- unless the `:stringent`
 option is used, as described below.
 
-Default: `nil`
+*Default:* `nil`
 
 #### The "stringent" option
 
@@ -420,7 +433,7 @@ for a nested DSL block; specifically, if set to `true`, it requires
 that an appropriate DSL can be found for every return value-- a
 `Lacquer::UnknownDSLError` is raised otherwise.
 
-Default: `false`
+*Default:* `false`
 
 #### The "required" option
 
@@ -433,14 +446,14 @@ arguments passed during invocation, define the handler using `on` and
 check their values in the definition block -- or check them in the
 underlying host class implementation.   
 
-Default: `false`
+*Default:* `false`
 
 #### The "desc" option
 
 Just like the `desc` utility in the DSL definition, this provides a
 description of the handler(s) created.
 
-Default: `nil`
+*Default:* `nil`
 
 ### Yield instead of Instance Eval
 
@@ -449,6 +462,7 @@ class implementation is flexible use.
 
 Remember the example above?
 
+    # using the DSL
     photo "School photo" do
       person "Sheila" do
         age 12
@@ -464,6 +478,7 @@ accept a block argument.
 
 For example, this will also work:
 
+    # using the DSL
     photo "School photo" do |photo|
       photo.person "Sheila" do |person|
         person.age 12
